@@ -16,6 +16,7 @@ from .models import messages as messageInstance
 from .serializers import userDatasSerializers, messageSerializers, chatBoxSerializers,imageBoxSerializers
 import json
 import random
+from django.contrib.auth.models import User
 
 
 
@@ -486,3 +487,6 @@ def createGroup(requests):
         serializedGroupSettings.save()
 
     return Response(serializedGroupSettings.data)
+
+
+# User_1 = User.obje
