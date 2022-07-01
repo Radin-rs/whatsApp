@@ -3,7 +3,6 @@ from django.db import models
 # Create your models here.
 
 
-
 class usersData(models.Model):
     username = models.CharField(max_length=250)
     phone_number = models.CharField(max_length=250)
