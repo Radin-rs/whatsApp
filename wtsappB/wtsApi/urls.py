@@ -9,6 +9,7 @@ urlpatterns=[
     path("getUserByPhoneNumber/", views.getUsersByPhoneNumber),
     path("sendMessage/", views.sendMessage),
     path("startNewChat/", views.startNewChat),
+    path("getPvOtherSide/user_id=<user_id>&chat_id=<chat_id>", views.pvOtherSide),
     path("downloadImage/", views.downloadImage),
     path("getChats/user_id=<user_id>", views.getUserChats),
     path("getChatInfos/chat_id=<chat_id>", views.getChatInfos),
