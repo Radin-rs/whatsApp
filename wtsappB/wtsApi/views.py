@@ -22,9 +22,9 @@ import random
 
 def addMessage(chat_id,message,reply_to,user_id,message_type="message"):
     new_message_id=generate_new_message_id()
-    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data #read from database
     time_now=str(datetime.datetime.now())
-    messages = json.loads(dt["messages"].replace("\'", "\""))
+    messages = json.loads(dt["messages"].replace("\'", "\"")) #convert Json to list - in Json we cant use '
     message_template = {
         "sent_message": message,
         "time_created": time_now,
@@ -33,8 +33,9 @@ def addMessage(chat_id,message,reply_to,user_id,message_type="message"):
         "message_type":message_type,
         "user_id": user_id
     }
-    messages.append(message_template)
-    modelInstance_ch.objects.filter(chat_id=chat_id).update(messages=messages)
+    messages.append(message_template) #Update
+
+    modelInstance_ch.objects.filter(chat_id=chat_id).update(messages=messages) #filtering desired table by chatId and updated massages
 
     message_box_template = {
         "chat_id": chat_id,
@@ -42,7 +43,7 @@ def addMessage(chat_id,message,reply_to,user_id,message_type="message"):
         "sender_id": user_id,
         "time_created": time_now,
         "message": message
-    }
+    } #prettier code
 
     serializedMessageBox = messageSerializers(data=message_box_template)
 
@@ -55,7 +56,7 @@ def infoByUserid(user_id):
 
 def ImageById(image_id):
     if image_id != -1:
-        image = imageBoxSerializers(modelInstance_im.objects.get(image_id=image_id)).data["upload"]
+        image = imageBoxSerializers(modelInstance_im.objects.get(image_id=image_id)).data["upload"] # subDirectory
     else:
         image = -1
     return image
@@ -121,7 +122,7 @@ def getChatParticipants(chat_id):
 
 
 
-@api_view(["POST"])
+@api_view(["POST"]) #Ask
 def sendImage(requests):
     form=modelInstance_im(requests.POST, requests.FILES)
     if form.is_valid():
@@ -130,36 +131,29 @@ def sendImage(requests):
 
 @api_view(["POST"])
 def sendMessage(requests):
-    new_message_id=generate_new_message_id()
 
     data = requests.data
     chat_id = data["chat_id"]
     sent_message = data["sent_message"]
-    time_created = data["time_created"]
     reply_to = data["reply_to"]
     user_id = data["user_id"]
     addMessage(chat_id,sent_message,reply_to,user_id)
 
-
-
-
-
-
-
     return Response({})
-
-
 
 
 @api_view(["GET"])
 def getUserInfos(requests,user_id):
-    dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
-    del dt["user_chats_id"]
+    dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data #Extract from db
+    del dt["user_chats_id"] #Security :)
     dt.update({
         "profile_image_id":ImageById(dt["profile_image_id"])
     })
 
     return Response(dt)
+
+
+#_-------------------------------------------------------------
 
 @api_view(["GET"])
 def getChatInfos(requests,chat_id):
