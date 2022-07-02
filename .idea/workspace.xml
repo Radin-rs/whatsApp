@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_03 in views(comments)">
-      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" afterDir="false" />
+    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_4 in Admin">
+      <change beforePath="$PROJECT_DIR$/wtsappB/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +109,42 @@
       <option name="project" value="LOCAL" />
       <updated>1656768908756</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="change_4 in views">
+      <created>1656769180979</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1656769180979</updated>
+    </task>
+    <task id="LOCAL-00012" summary="change_4 in urls">
+      <created>1656769223796</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1656769223796</updated>
+    </task>
+    <task id="LOCAL-00013" summary="change_4 in serializers">
+      <created>1656769261302</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1656769261302</updated>
+    </task>
+    <task id="LOCAL-00014" summary="change_4 in Models">
+      <created>1656769293277</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1656769293277</updated>
+    </task>
+    <task id="LOCAL-00015" summary="change_4 in Admin">
+      <created>1656769326544</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1656769326544</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -131,6 +166,11 @@
     <MESSAGE value="change 2 in views(comments)" />
     <MESSAGE value="change_02 in views(comments)" />
     <MESSAGE value="change_03 in views(comments)" />
-    <option name="LAST_COMMIT_MESSAGE" value="change_03 in views(comments)" />
+    <MESSAGE value="change_4 in views" />
+    <MESSAGE value="change_4 in urls" />
+    <MESSAGE value="change_4 in serializers" />
+    <MESSAGE value="change_4 in Models" />
+    <MESSAGE value="change_4 in Admin" />
+    <option name="LAST_COMMIT_MESSAGE" value="change_4 in Admin" />
   </component>
 </project>
