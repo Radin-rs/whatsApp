@@ -12,43 +12,58 @@ from rest_framework.decorators import api_view
 from .models import usersData as modelInstance
 from .models import chatBox as modelInstance_ch
 from .models import imageBox as modelInstance_im
+from .models import fileBox as modelInstance_fi
 from .models import messages as messageInstance
-from .serializers import userDatasSerializers, messageSerializers, chatBoxSerializers,imageBoxSerializers
+from .serializers import userDatasSerializers, messageSerializers, chatBoxSerializers,imageBoxSerializers,fileBoxSerializers
 import json
 import random
 
 
 
 
-def addMessage(chat_id,message,reply_to,user_id,message_type="message"):
+def addMessage(chat_id,message,reply_to,user_id,message_type="message",content_type=None,file_id=None,caption=None):
     new_message_id=generate_new_message_id()
-    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data #read from database
+    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
     time_now=str(datetime.datetime.now())
-    messages = json.loads(dt["messages"].replace("\'", "\"")) #convert Json to list - in Json we cant use '
-    message_template = {
-        "sent_message": message,
-        "time_created": time_now,
-        "reply_to": reply_to,
-        "message_id": new_message_id,
-        "message_type":message_type,
-        "user_id": user_id
-    }
-    messages.append(message_template) #Update
+    messages = json.loads(dt["messages"].replace("\'", "\""))
+    if message_type!="file":
+        message_template = {
+            "sent_message": message,
+            "time_created": time_now,
+            "reply_to": reply_to,
+            "message_id": new_message_id,
+            "message_type":message_type,
+            "user_id": user_id
+        }
 
-    modelInstance_ch.objects.filter(chat_id=chat_id).update(messages=messages) #filtering desired table by chatId and updated massages
+        message_box_template = {
+            "chat_id": chat_id,
+            "message_id": new_message_id,
+            "sender_id": user_id,
+            "time_created": time_now,
+            "message": message
+        }
 
-    message_box_template = {
-        "chat_id": chat_id,
-        "message_id": new_message_id,
-        "sender_id": user_id,
-        "time_created": time_now,
-        "message": message
-    } #prettier code
+        serializedMessageBox = messageSerializers(data=message_box_template)
 
-    serializedMessageBox = messageSerializers(data=message_box_template)
+        if serializedMessageBox.is_valid():
+            serializedMessageBox.save()
+    else:
+        message_template = {
+            "time_created": time_now,
+            "reply_to": reply_to,
+            "content_type": content_type,
+            "file_id":file_id,
+            "caption":caption,
 
-    if serializedMessageBox.is_valid():
-        serializedMessageBox.save()
+            "message_type": message_type,
+            "user_id": user_id
+        }
+    messages.append(message_template)
+    modelInstance_ch.objects.filter(chat_id=chat_id).update(messages=messages)
+    return True
+
+
 
 def infoByUserid(user_id):
     info = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
@@ -56,10 +71,22 @@ def infoByUserid(user_id):
 
 def ImageById(image_id):
     if image_id != -1:
-        image = imageBoxSerializers(modelInstance_im.objects.get(image_id=image_id)).data["upload"] # subDirectory
+        image = imageBoxSerializers(modelInstance_im.objects.get(image_id=image_id)).data["upload"]
     else:
         image = -1
     return image
+
+def FileById(file_id):
+    print("AVAZI")
+    file = fileBoxSerializers(modelInstance_fi.objects.get(file_id=file_id)).data
+    print("SAG")
+    file_datas=[file["upload"],file["name"]]
+
+
+
+
+
+    return file_datas
 
 def correctedPhoneNumber(messy_phone):
     if messy_phone.startswith("0"):
@@ -81,14 +108,24 @@ def generate_group_chat_id():
     return random_num
 
 
-def generate_group_image_id():
+def chatInfosByChatId(chat_id):
+    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+    dt.update({
+        "participants":json.loads(dt["participants"].replace("\'","\"")),
+        "messages":json.loads(dt["messages"].replace("\'","\"")),
+    })
+    return dt
+
+
+def generate_group_file_id():
     random_num = random.randint(2345678909800, 9923456789000)
 
-    new_image_id = modelInstance_im.objects.filter(image_id=random_num)
+    founded_image = modelInstance_im.objects.filter(image_id=random_num)
+    founded_file = modelInstance_fi.objects.filter(file_id=random_num)
 
-    while new_image_id:
+    while founded_image or founded_file:
         random_num = random.randint(2345678909800, 9923456789000)
-        if not modelInstance_im.objects.filter(image=random_num):
+        if not modelInstance_im.objects.filter(image_id=random_num) and not modelInstance_fi.objects.filter(file_id=random_num):
             break
     return random_num
 
@@ -119,10 +156,14 @@ def getChatParticipants(chat_id):
     participants=json.loads(dt["participants"].replace("\'","\""))
     return participants
 
+def getChatMessages(chat_id):
+    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+    messages=json.loads(dt["messages"].replace("\'","\""))
+    return messages
 
 
 
-@api_view(["POST"]) #Ask
+@api_view(["POST"])
 def sendImage(requests):
     form=modelInstance_im(requests.POST, requests.FILES)
     if form.is_valid():
@@ -131,40 +172,56 @@ def sendImage(requests):
 
 @api_view(["POST"])
 def sendMessage(requests):
+    new_message_id=generate_new_message_id()
 
     data = requests.data
     chat_id = data["chat_id"]
     sent_message = data["sent_message"]
+    time_created = data["time_created"]
     reply_to = data["reply_to"]
     user_id = data["user_id"]
     addMessage(chat_id,sent_message,reply_to,user_id)
 
+
+
+
+
+
+
     return Response({})
+
+
 
 
 @api_view(["GET"])
 def getUserInfos(requests,user_id):
-    dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data #Extract from db
-    del dt["user_chats_id"] #Security :)
+    dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
+    del dt["user_chats_id"]
     dt.update({
         "profile_image_id":ImageById(dt["profile_image_id"])
     })
 
     return Response(dt)
 
-
-#_-------------------------------------------------------------
-
 @api_view(["GET"])
 def getChatInfos(requests,chat_id):
     dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+    participants=getChatParticipants(chat_id)
+
+
+
+
+
+
 
     if dt["chat_type"]=="person":
         return Response(dt)
     final_info={key:dt[key] for key in dt if key!="participants"}
     final_info["group_image_id"]=ImageById(final_info["group_image_id"])
     final_info["participants"]=[]
-    participants=json.loads(dt["participants"].replace("\'","\""))
+
+
+
     for member in participants:
         user_data = userDatasSerializers(modelInstance.objects.get(user_id=int(member["user_id"]))).data
         profile_image_id=user_data["profile_image_id"]
@@ -236,9 +293,23 @@ def getUserChats(requests, user_id):
 
 @api_view(["GET"])
 def getMessages(requests, chat_id):
-    allusersData = modelInstance_ch.objects.get(chat_id=chat_id)
-    ser = chatBoxSerializers(allusersData)
-    return Response(ser.data)
+    chat_data = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+
+    messages=getChatMessages(chat_id)
+
+    updated_messages = [] # file_id to file_subdirectory
+    for message in messages:
+        if message["message_type"]=="file":
+            file_info=FileById(message["file_id"])
+            message["file_id"]=file_info[0]
+            message["file_name"]=file_info[1]
+        updated_messages.append(message)
+
+    chat_data.update({
+        "messages":updated_messages
+    })
+    print(chat_data)
+    return Response(chat_data)
 
 
 @api_view(["GET"])
@@ -403,7 +474,7 @@ def login(requests):
     else:
 
         new_user_id = generate_user_id()
-        new_chat_id=generate_group_image_id()
+        new_chat_id=generate_group_file_id()
         data = requests.data.dict()
 
         data["user_id"] = str(new_user_id)
@@ -453,6 +524,63 @@ def exitGroup(requests):
 
 
 @api_view(["GET"])
+def groupsInCommon(requests,chat_id):
+    participants=getChatParticipants(chat_id)
+    both_users_chats_id=[]
+    for user_id in participants:
+        user_chats_id=json.loads(infoByUserid(user_id)["user_chats_id"].replace("\'","\""))
+        chats_id=[chat["chat_id"] for chat in user_chats_id if chat["chat_type"]=="group"]
+        both_users_chats_id.append(chats_id)
+    print(both_users_chats_id)
+    common_groups_id=list(set(both_users_chats_id[0]) & set(both_users_chats_id[1]))
+    print(common_groups_id)
+    common_groups=list()
+    for cg in common_groups_id:
+
+        group_info=chatInfosByChatId(cg)
+
+        del group_info["messages"]
+
+        group_info.update(
+            {
+                "group_image_id":ImageById(group_info["group_image_id"])
+            }
+        )
+        common_groups.append(group_info)
+
+
+    return Response({"common_groups":common_groups})
+
+
+
+@api_view(["POST"])
+def uploadFile(requests):
+
+
+    datas=requests.data.dict()
+
+    file_id=generate_group_file_id()
+
+    user_id = datas["user_id"]
+    chat_id = datas["chat_id"]
+    reply_to = datas["reply_to"]
+    file = datas["file"]
+    caption=datas["caption"]
+    name=datas["name"]
+    content_type = datas["content_type"]
+    file_name=datetime.datetime.now().microsecond
+    file_to_save=ContentFile(base64.b64decode(requests.data.get("file")), name=str(file_name) + content_type)
+    isValid=addMessage(chat_id,None,reply_to,user_id,message_type="file",content_type=content_type,file_id=file_id,caption=caption)
+    if isValid:
+        file=modelInstance_fi(upload=file_to_save,content_type=content_type,sender_id=user_id,file_id=file_id,name=name)
+        file.save()
+    return Response({})
+
+
+
+
+
+@api_view(["GET"])
 def pvOtherSide(requests,user_id,chat_id):
     sides=getChatParticipants(chat_id)
 
@@ -476,7 +604,7 @@ def createGroup(requests):
     group_image = requests.data["group_image"]
 
     if "group_image" in requests.data.dict():
-        group_image_id=generate_group_image_id()
+        group_image_id=generate_group_file_id()
 
 
     group_temp = {

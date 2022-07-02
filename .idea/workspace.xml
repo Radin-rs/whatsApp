@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_01 in urls" />
+    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_03 in views(comments)">
+      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,14 +16,17 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2BKbseaja5qqrClTGxPfCRfP6lX" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
 }]]></component>
@@ -76,7 +81,35 @@
       <option name="project" value="LOCAL" />
       <updated>1656662495333</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="change 2 in views(comments)">
+      <created>1656768852563</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1656768852563</updated>
+    </task>
+    <task id="LOCAL-00008" summary="change 2 in views(comments)">
+      <created>1656768875618</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1656768875618</updated>
+    </task>
+    <task id="LOCAL-00009" summary="change_02 in views(comments)">
+      <created>1656768889984</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1656768889984</updated>
+    </task>
+    <task id="LOCAL-00010" summary="change_03 in views(comments)">
+      <created>1656768908756</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1656768908756</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -95,6 +128,9 @@
     <MESSAGE value="change_1 in views" />
     <MESSAGE value="change_01 in model" />
     <MESSAGE value="change_01 in urls" />
-    <option name="LAST_COMMIT_MESSAGE" value="change_01 in urls" />
+    <MESSAGE value="change 2 in views(comments)" />
+    <MESSAGE value="change_02 in views(comments)" />
+    <MESSAGE value="change_03 in views(comments)" />
+    <option name="LAST_COMMIT_MESSAGE" value="change_03 in views(comments)" />
   </component>
 </project>
