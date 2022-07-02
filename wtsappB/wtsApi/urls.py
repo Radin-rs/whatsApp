@@ -18,10 +18,11 @@ urlpatterns=[
     path("getImage/image_id=<image_id>", views.ImageUrlByImageId),
     path("checkUserByPhone/phone_number=<phone_number>", views.checkUserByPhone),
     path("createGroup/", views.createGroup),
+    path("groupInCommon/chat_id=<chat_id>", views.groupsInCommon),
+    path("sendFile/", views.uploadFile),
     path("exitGroup/", views.exitGroup),
 ]
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,
                               document_root=settings.MEDIA_ROOT)
-
