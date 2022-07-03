@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_5 in urls">
+    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_05 in urls">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wtsappB/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/migrations/0002_filebox.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -182,7 +187,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656855074699</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="change_05 in urls">
+      <created>1656855380755</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1656855380755</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -213,6 +225,18 @@
     <MESSAGE value="change_4 in DB" />
     <MESSAGE value="change_5 in view" />
     <MESSAGE value="change_5 in urls" />
-    <option name="LAST_COMMIT_MESSAGE" value="change_5 in urls" />
+    <MESSAGE value="change_05 in urls" />
+    <option name="LAST_COMMIT_MESSAGE" value="change_05 in urls" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/wtsappB/wtsApi/views.py</url>
+          <line>260</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
