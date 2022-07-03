@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_4 in DB">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="72a1aea1-5a85-4b65-9977-80a64e979a94" name="Changes" comment="change_5 in urls">
+      <change beforePath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtsappB/wtsApi/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +161,28 @@
       <option name="project" value="LOCAL" />
       <updated>1656769790524</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="change_4 in DB">
+      <created>1656854966065</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1656854966065</updated>
+    </task>
+    <task id="LOCAL-00019" summary="change_5 in view">
+      <created>1656855013122</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1656855013122</updated>
+    </task>
+    <task id="LOCAL-00020" summary="change_5 in urls">
+      <created>1656855074699</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1656855074699</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -190,6 +211,8 @@
     <MESSAGE value="change_4 in Models" />
     <MESSAGE value="change_4 in Admin" />
     <MESSAGE value="change_4 in DB" />
-    <option name="LAST_COMMIT_MESSAGE" value="change_4 in DB" />
+    <MESSAGE value="change_5 in view" />
+    <MESSAGE value="change_5 in urls" />
+    <option name="LAST_COMMIT_MESSAGE" value="change_5 in urls" />
   </component>
 </project>
