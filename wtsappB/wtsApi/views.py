@@ -19,42 +19,40 @@ import json
 import random
 
 
+def addChatToUserChatsId(user_id,chat_id,chat_type): # this func is for addParticipants
+    user_datas = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data # list of dicts
 
-def addChatToUserChatsId(user_id,chat_id,chat_type): #this func is for addParticipants
-    user_datas = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data #list of dicts
+    current_user_chats_id=json.loads(user_datas["user_chats_id"].replace("\'", "\""))
 
-    current_user_chats_id=json.loads(user_datas["user_chats_id"].replace("\'","\""))
-
-    chat_info={
-        "chat_id":chat_id,
+    chat_info = {
+        "chat_id": chat_id,
     }
 
-    if chat_type=="group":
-        chat_info["chat_type"]="group"
-    elif chat_type=="person":
+    if chat_type == "group":
+        chat_info["chat_type"] = "group"
+    elif chat_type == "person":
         chat_info["chat_type"] = "person"
 
     current_user_chats_id.append(chat_info) # filtered by user Id
-
     modelInstance.objects.filter(user_id=user_id).update(user_chats_id=current_user_chats_id)
     # Type = void
 
-def checkOwner(user_id,chat_id): #Check that this person is admin or not
-    participants=getChatParticipants(chat_id)
 
+def checkOwner(user_id,chat_id): # Check that this person is admin or not
+    participants=getChatParticipants(chat_id)
     for member in participants:
-        if member["user_id"]==int(user_id):
-            if member["level"]=="owner": # Member or Owner
+        if member["user_id"] == int(user_id):
+            if member["level"] == "owner":  # Member or Owner
                 return True
     return False
 
 
 def addMessage(chat_id,message,reply_to,user_id,message_type="message",content_type=None,file_id=None,caption=None):
-    new_message_id=generate_new_message_id()
+    new_message_id = generate_new_message_id()
     dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data # catching the field in db
     time_now=str(datetime.datetime.now())
-    messages = json.loads(dt["messages"].replace("\'", "\"")) # we need messages field so extracted it
-    if message_type != "file": # MESSAGE TYPES in this program = 'file' & 'message'
+    messages = json.loads(dt["messages"].replace("\'", "\""))  # we need messages field so extracted it
+    if message_type != "file":  # MESSAGE TYPES in this program = 'file' & 'message'
         message_template = {
             "sent_message": message,
             "time_created": time_now,
@@ -91,7 +89,6 @@ def addMessage(chat_id,message,reply_to,user_id,message_type="message",content_t
     return True
 
 
-
 def infoByUserid(user_id):
     info = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
     return info
@@ -104,14 +101,16 @@ def ImageById(image_id):
         image = -1
     return image
 
+
 def FileById(file_id):
     file = fileBoxSerializers(modelInstance_fi.objects.get(file_id=file_id)).data
     file_datas = [file["upload"], file["name"]]
     return file_datas
 
+
 def correctedPhoneNumber(messy_phone):
     if messy_phone.startswith("0"):
-        return re.sub("^0", "+98", messy_phone).strip()
+        return re.sub("^0", "+98", messy_phone).strip() # strip = morarabSazi(deleting right and left spaces)
     elif messy_phone.startswith("+98"):
         return messy_phone
     return "+98"+messy_phone
@@ -133,7 +132,7 @@ def chatInfosByChatId(chat_id):
     dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
     dt.update({
         "participants":json.loads(dt["participants"].replace("\'","\"")),
-        "messages":json.loads(dt["messages"].replace("\'","\"")),
+        "messages": json.loads(dt["messages"].replace("\'","\"")),  # converting json to list of dicts  by json.loads(typeCasting for 2 fields)
     })
     return dt
 
@@ -150,6 +149,7 @@ def generate_group_file_id():
             break
     return random_num
 
+
 def generate_new_message_id():
     random_num = random.randint(2345678909800, 9923456789000)
     new_message_id = messageInstance.objects.filter(message_id=random_num)
@@ -162,7 +162,6 @@ def generate_new_message_id():
 
 def generate_user_id():
     random_num = random.randint(2345678909800, 9923456789000)
-
     new_chat_id = modelInstance.objects.filter(user_id=random_num)
 
     while new_chat_id:
@@ -177,11 +176,11 @@ def getChatParticipants(chat_id):
     participants=json.loads(dt["participants"].replace("\'","\""))
     return participants
 
+
 def getChatMessages(chat_id):
     dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
     messages=json.loads(dt["messages"].replace("\'","\""))
     return messages
-
 
 
 # @api_view(["POST"])
@@ -198,7 +197,7 @@ def sendMessage(requests):
     sent_message = data["sent_message"]
     reply_to = data["reply_to"]
     user_id = data["user_id"]
-    addMessage(chat_id,sent_message,reply_to,user_id)
+    addMessage(chat_id, sent_message, reply_to, user_id)
     return Response({})
 
 
@@ -207,52 +206,50 @@ def getUserInfos(requests,user_id):
     dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
     del dt["user_chats_id"]
     dt.update({
-        "profile_image_id":ImageById(dt["profile_image_id"])
+        "profile_image_id": ImageById(dt["profile_image_id"])
     })
     return Response(dt)
 
+
 @api_view(["GET"])
-def getChatInfos(requests,chat_id):
+def getChatInfos(requests, chat_id):
     dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
     participants=getChatParticipants(chat_id)
-    if dt["chat_type"]=="person":
+    if dt["chat_type"] == "person":
         return Response(dt)
-    final_info={key:dt[key] for key in dt if key != "participants"} # initialize
-    final_info["group_image_id"]=ImageById(final_info["group_image_id"])
-    final_info["participants"]=[]
+    final_info={key:dt[key] for key in dt if key != "participants"}  # initialize
+    final_info["group_image_id"] = ImageById(final_info["group_image_id"])
+    final_info["participants"] = []
 
     for member in participants:
         user_data = userDatasSerializers(modelInstance.objects.get(user_id=int(member["user_id"]))).data
-        profile_image_id=user_data["profile_image_id"]
-        username=user_data["username"]
-        phone_number=user_data["phone_number"]
-        bio=user_data["bio"]
-        image=ImageById(profile_image_id)
-        member["profile_image_subdirectory"]=image
-        member["username"]=username
-        member["phone_number"]=phone_number
-        member["bio"]=bio
+        profile_image_id = user_data["profile_image_id"]
+        username = user_data["username"]
+        phone_number = user_data["phone_number"]
+        bio = user_data["bio"]
+        image = ImageById(profile_image_id)
+        member["profile_image_subdirectory"] = image
+        member["username"] = username
+        member["phone_number"] = phone_number
+        member["bio"] = bio
         final_info["participants"].append(member)
-
     return Response(final_info)
 
 # &&&&&&&&&&&&&&&&&&&&&&&&&
 
+
 @api_view(["GET"])
 def getUserChats(requests, user_id):
-    datas=[]
+    datas = []
     dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
 
     for chat_id in json.loads(dt["user_chats_id"].replace("\'", "\"")):
-
-        chats=chatBoxSerializers(modelInstance_ch.objects.get(chat_id=int(chat_id["chat_id"]))).data # 🥲😌
-
+        chats = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=int(chat_id["chat_id"]))).data # 🥲😌
         if chats["chat_type"]=="group":
             chat_id["name"] = chats["group_name"]
             if chats["group_image_id"] != -1:
                 image_subdirectory = imageBoxSerializers(
                     modelInstance_im.objects.get(image_id=chats["group_image_id"])).data
-
                 chat_id["profile_subdirectory"] = image_subdirectory
             else :
                 chat_id["profile_subdirectory"] = -1
@@ -260,27 +257,27 @@ def getUserChats(requests, user_id):
         else:
             tar_data=userDatasSerializers(modelInstance.objects.get(user_id=chat_id["participants_id"][1])).data
             chat_id["name"]=tar_data["phone_number"]
-            if tar_data["profile_image_id"]!=-1:
+            if tar_data["profile_image_id"] != -1:
                 image_subdirectory = imageBoxSerializers(
                     modelInstance_im.objects.get(image_id=tar_data["profile_image_id"])).data
 
-                chat_id["profile_subdirectory"]=image_subdirectory
+                chat_id["profile_subdirectory"] = image_subdirectory
             else:
-                chat_id["profile_subdirectory"]=-1
+                chat_id["profile_subdirectory"] = -1
 
-        if len(json.loads(chats["messages"].replace("\'","\"")))>0:
+        if len(json.loads(chats["messages"].replace("\'", "\""))) > 0:
 
             datas.append(
                 {
-                    "last_message":json.loads(chats["messages"].replace("\'","\""))[-1],
-                    "chat_infos":chat_id
+                    "last_message": json.loads(chats["messages"].replace("\'", "\""))[-1],
+                    "chat_infos": chat_id
 
                 }
             )
         else:
             datas.append(
                 {
-                    "last_message": {"sent_message":"group created" if chats["chat_type"]=="group" else "Hey there! I am using WhatsApp","time_created":"","reply_to":"","user_id":user_id},
+                    "last_message": {"sent_message": "group created" if chats["chat_type"] == "group" else "Hey there! I am using WhatsApp","time_created":"","reply_to":"","user_id":user_id},
 
                     "chat_infos": chat_id
 
@@ -293,24 +290,22 @@ def getUserChats(requests, user_id):
 @api_view(["GET"])
 def getMessages(requests, chat_id):
     chat_data = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
-
-    messages=getChatMessages(chat_id)
-
-    updated_messages = [] # file_id to file_subdirectory
+    messages = getChatMessages(chat_id)
+    updated_messages = []  # file_id to file_subdirectory
     for message in messages:
-        if message["message_type"]=="file":
-            file_info=FileById(message["file_id"]) #firt index = file Id
-            message["file_id"]=file_info[0] # file_id(file info) = etelaate koli darmorde file
-            message["file_name"]=file_info[1]
+        if message["message_type"] == "file":
+            file_info = FileById(message["file_id"])  # first index = file Id
+            message["file_id"] = file_info[0]  # file_id(file info) = etelaate koli darmorde file
+            message["file_name"] = file_info[1]
         updated_messages.append(message)
 
     chat_data.update({
-        "messages":updated_messages
+        "messages": updated_messages
     })
     return Response(chat_data)
 
 
-@api_view(["GET"]) # for login
+@api_view(["GET"])  # for login
 def checkUserExist(requests, phone_number):
     allusersData = modelInstance_ch.objects.get(phone_number=phone_number)
     ser = chatBoxSerializers(allusersData)
@@ -321,7 +316,6 @@ def checkUserExist(requests, phone_number):
 def startNewChat(requests):
     datas = requests.data.dict()
     founded_chat_id = None
-
     res_id = datas['res_id']
     target_id = datas['target_id']
     #resorce datas
@@ -329,7 +323,6 @@ def startNewChat(requests):
     allDatas = userDatasSerializers(dt).data
     res_chat_ids = allDatas
     f = json.loads(res_chat_ids['user_chats_id'].replace('\'', '\"'))
-
     #target datas
     dtt = modelInstance.objects.get(user_id=target_id)
     allDatasT = userDatasSerializers(dtt).data
@@ -361,7 +354,7 @@ def startNewChat(requests):
 
         tf.append({
             "chat_id": random_num,
-            "participants_id": [target_id,res_id],
+            "participants_id": [target_id, res_id],
             "chat_type": "person"
         })
 
@@ -371,11 +364,11 @@ def startNewChat(requests):
         chat_info = {
             "chat_id": random_num,
             "chat_type": "person",
-            "participants":json.dumps([res_id,target_id]),
+            "participants":json.dumps([res_id, target_id]),
             "messages": "[]",
-            "group_name":"None",
-            "group_description":"None",
-            "group_image":"None"
+            "group_name": "None",
+            "group_description": "None",
+            "group_image": "None"
         }
 
         serializedMessage = chatBoxSerializers(data=chat_info)
@@ -392,22 +385,10 @@ def startNewChat(requests):
     return Response({})
 
 
-# def downloadImage(requests):
-#     BASE_DIR = Path(__file__).resolve().parent.parent
-#
-#     file_path = "D:\DjangoProjectA\whatsAppBackend\wtsappB\\files\images\890444.png"
-#     if os.path.exists(file_path):
-#         with open(file_path, 'rb') as fh:
-#             response = HttpResponse(fh.read(), content_type="application/kl.png")
-#             response['Content-Disposition'] = 'inline; filename=hj.png'
-#             return response
-#     raise Http404
-
-
 @api_view(["GET"])
 def checkUserByPhone(requests,phone_number):
     allDatas = list(userDatasSerializers(modelInstance.objects.all(), many=True).data)
-    return Response({"user_exist":isUserExist(allDatas,correctedPhoneNumber(phone_number))})
+    return Response({"user_exist": isUserExist(allDatas, correctedPhoneNumber(phone_number))})
 
 #???????????????????????
 
@@ -420,14 +401,12 @@ def getUsersByPhoneNumber(requests):
 
         for user in allDatas:
             if number == user["phone_number"]:
-
-                if user not in valid_numebrs:
+                if user not in valid_numebrs: # Valid_number is empty?!!!
                     if user["profile_image_id"] != -1:
                         image_subdirectory=imageBoxSerializers(modelInstance_im.objects.get(image_id=user["profile_image_id"])).data
                         user["profile_image_id"]=image_subdirectory
                     valid_numebrs.append(user)
                     break
-
     return Response(valid_numebrs)
 
 
@@ -435,6 +414,7 @@ def getUsersByPhoneNumber(requests):
 def ImageUrlByImageId(image_id):
     founded_imageBox = imageBoxSerializers(modelInstance_im.objects.get(image_id=image_id)).data
     return Response({"subDirectory":founded_imageBox})
+
 
 def isUserExist(users, phone_number):
     for user in users:
@@ -460,11 +440,10 @@ def login(requests):
 
     else:
         new_user_id = generate_user_id()
-        new_chat_id=generate_group_file_id()
+        new_chat_id = generate_group_file_id()
         data = requests.data.dict()
-
         data["user_id"] = str(new_user_id)
-        data ["phone_number"]=correctedPhoneNumber(data["phone_number"])
+        data["phone_number"] = correctedPhoneNumber(data["phone_number"])
 
         if "profile_image" in data:
             data["profile_image_id"] = str(new_chat_id)
@@ -481,61 +460,55 @@ def login(requests):
 
 @api_view(["POST"])
 def exitGroup(requests):
-    user_id_exit=requests.data.dict()["user_id"]
-    chat_id=requests.data.dict()["chat_id"]
+    user_id_exit = requests.data.dict()["user_id"]
+    chat_id = requests.data.dict()["chat_id"]
 
     dt = userDatasSerializers(modelInstance.objects.get(user_id=user_id_exit)).data
 
-    user_chats_id=json.loads(dt["user_chats_id"].replace("\'", "\""))
-    updated_user_chats_id=[chid for chid in user_chats_id if chid["chat_id"]!=int(chat_id)]
+    user_chats_id = json.loads(dt["user_chats_id"].replace("\'", "\""))
+    updated_user_chats_id = [chid for chid in user_chats_id if chid["chat_id"] != int(chat_id)]
 
     modelInstance.objects.filter(user_id=user_id_exit).update(user_chats_id=updated_user_chats_id)
 
     chat_box = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
-    participants=json.loads(chat_box["participants"].replace("\'","\""))
-    updated_participants=[member for member in participants if member["user_id"]!=user_id_exit]
+    participants = json.loads(chat_box["participants"].replace("\'", "\""))
+    updated_participants = [member for member in participants if member["user_id"] != user_id_exit]
     modelInstance_ch.objects.filter(chat_id=chat_id).update(participants=updated_participants)
-    addMessage(chat_id,dt["username"]+" Left","",user_id_exit,"exit_group")
+    addMessage(chat_id, dt["username"]+" Left", "", user_id_exit, "exit_group")
 
     return Response({})
 
 
 @api_view(["GET"])
-def groupsInCommon(requests,chat_id):
-    participants=getChatParticipants(chat_id)
+def groupsInCommon(requests, chat_id):
+    participants = getChatParticipants(chat_id)
     both_users_chats_id=[]
     for user_id in participants:
-        user_chats_id=json.loads(infoByUserid(user_id)["user_chats_id"].replace("\'","\""))
-        chats_id=[chat["chat_id"] for chat in user_chats_id if chat["chat_type"]=="group"]
+        user_chats_id = json.loads(infoByUserid(user_id)["user_chats_id"].replace("\'", "\""))
+        chats_id = [chat["chat_id"] for chat in user_chats_id if chat["chat_type"] == "group"]
         both_users_chats_id.append(chats_id)
-    common_groups_id=list(set(both_users_chats_id[0]) & set(both_users_chats_id[1]))
-    common_groups=list()
+    common_groups_id = list(set(both_users_chats_id[0]) & set(both_users_chats_id[1]))
+    common_groups = list()
     for cg in common_groups_id:
-
-        group_info=chatInfosByChatId(cg)
-
+        group_info = chatInfosByChatId(cg)
         del group_info["messages"]
-
         group_info.update(
             {
-                "group_image_id":ImageById(group_info["group_image_id"])
+                "group_image_id": ImageById(group_info["group_image_id"])
             }
         )
         common_groups.append(group_info)
-
-
-    return Response({"common_groups":common_groups})
-
+    return Response({"common_groups": common_groups})
 
 
 @api_view(["POST"])
 def changeGroupDescription(requests):
-    datas=requests.data.dict()
-    chat_id=datas["chat_id"]
-    new_description=datas["description"]
+    datas = requests.data.dict()
+    chat_id = datas["chat_id"]
+    new_description = datas["description"]
     modelInstance_ch.objects.filter(chat_id=chat_id).update(group_description=new_description)
     return Response({
-        "successful":"description_changed"
+        "successful": "description_changed"
     })
 
 
@@ -546,49 +519,41 @@ def addParticipants(requests):
     chat_id = datas["chat_id"]
     user_id = datas["user_id"]
 
-    if not checkOwner(user_id,chat_id):
-         return Response({"error" : "permission not permitted"})
+    if not checkOwner(user_id, chat_id):
+         return Response({"error": "permission not permitted"})
 
     current_participants = getChatParticipants(chat_id)
-
     updated_participants = current_participants+participants_to_add
-
     modelInstance_ch.objects.filter(chat_id=chat_id).update(participants=updated_participants)
     for member in participants_to_add:
-        addChatToUserChatsId(member["user_id"],chat_id,"group")
-
+        addChatToUserChatsId(member["user_id"], chat_id, "group")
     return Response({
-        "successful":"participants added"
+        "successful": "participants added"
     })
 
 
 @api_view(["POST"])
 def changeGroupName(requests):
-    datas=requests.data.dict()
-    chat_id=datas["chat_id"]
-    user_id=datas["user_id"]
-    new_group_name=datas["new_subject"]
-
-    if not checkOwner(user_id,chat_id):
-        return Response({"error":"permission not permitted"})
+    datas = requests.data.dict()
+    chat_id = datas["chat_id"]
+    user_id = datas["user_id"]
+    new_group_name = datas["new_subject"]
+    if not checkOwner(user_id, chat_id):
+        return Response({"error": "permission not permitted"})
     modelInstance_ch.objects.filter(chat_id=chat_id).update(group_name=new_group_name)
-    return Response({"subject_changed":"successful"})
+    return Response({"subject_changed": "successful"})
 
 
 @api_view(["POST"])
 def changeGroupImage(requests):
+    new_image_id = generate_group_file_id()
+    datas = requests.data.dict()
+    chat_id = datas["chat_id"]
+    user_id = datas["user_id"]
 
-    new_image_id=generate_group_file_id()
-
-    datas=requests.data.dict()
-    chat_id=datas["chat_id"]
-    user_id=datas["user_id"]
-
-    if not checkOwner(user_id,chat_id):
-        return Response({"error":"permission not permitted"})
-
-    chat_to_update=modelInstance_ch.objects.filter(chat_id=chat_id)
-
+    if not checkOwner(user_id, chat_id):
+        return Response({"error": "permission not permitted"})
+    chat_to_update = modelInstance_ch.objects.filter(chat_id=chat_id)
     image_name = datetime.datetime.now().microsecond
     image_to_save = ContentFile(base64.b64decode(requests.data.get("group_image")), name=str(image_name) + ".png")
     image = modelInstance_im(upload=image_to_save, image_id=new_image_id)
@@ -600,32 +565,31 @@ def changeGroupImage(requests):
 
 @api_view(["POST"])
 def uploadFile(requests):
-    datas=requests.data.dict()
+    datas = requests.data.dict()
 
-    file_id=generate_group_file_id()
-
+    file_id = generate_group_file_id()
     user_id = datas["user_id"]
     chat_id = datas["chat_id"]
     reply_to = datas["reply_to"]
     file = datas["file"]
-    caption=datas["caption"]
-    name=datas["name"]
+    caption = datas["caption"]
+    name = datas["name"]
     content_type = datas["content_type"]
-    file_name=datetime.datetime.now().microsecond
-    file_to_save=ContentFile(base64.b64decode(requests.data.get("file")), name=str(file_name) + content_type)
-    isValid=addMessage(chat_id,None,reply_to,user_id,message_type="file",content_type=content_type,file_id=file_id,caption=caption)
+    file_name = datetime.datetime.now().microsecond
+    file_to_save = ContentFile(base64.b64decode(requests.data.get("file")), name=str(file_name) + content_type)
+    isValid = addMessage(chat_id,None,reply_to, user_id, message_type="file", content_type=content_type, file_id=file_id, caption=caption)
     if isValid:
-        file=modelInstance_fi(upload=file_to_save,content_type=content_type,sender_id=user_id,file_id=file_id,name=name)
-        file.save() # save in db
+        file = modelInstance_fi(upload=file_to_save, content_type=content_type, sender_id=user_id, file_id=file_id, name=name)
+        file.save()  # save in db
     return Response({})
 
 @api_view(["GET"])
-def pvOtherSide(requests,user_id,chat_id):
-    sides=getChatParticipants(chat_id)
+def pvOtherSide(requests, user_id, chat_id):
+    sides = getChatParticipants(chat_id)
 
-    otherSide=list(filter(lambda x:x!=user_id,sides))[0]
+    otherSide=list(filter(lambda x: x != user_id, sides))[0]
     return Response({
-        "other_side":otherSide
+        "other_side": otherSide
     })
 
 
@@ -636,10 +600,9 @@ def createGroup(requests):
     participants = requests.data["participants"]
     group_name = requests.data["group_name"]
     group_description = requests.data["group_description"]
-    group_image_id=-1
+    group_image_id = -1
     if "group_image" in requests.data.dict():
-        group_image_id=generate_group_file_id()
-
+        group_image_id = generate_group_file_id()
 
     group_temp = {
         "participants": participants,
@@ -647,17 +610,16 @@ def createGroup(requests):
         "group_description": group_description,
         "group_image_id": group_image_id,
         "chat_type": "group",
-        "messages": json.dumps([{'sent_message': 'group created', 'time_created': str(datetime.datetime.now()),'message_type':'init_group'}]),
+        "messages": json.dumps([{'sent_message': 'group created', 'time_created': str(datetime.datetime.now()), 'message_type':'init_group'}]),
         "chat_id": chat_id
     }
 
-    for user in json.loads(participants.replace("\'","\"")):
-
+    for user in json.loads(participants.replace("\'", "\"")):
 
         dt = userDatasSerializers(modelInstance.objects.get(user_id=user["user_id"])).data
 
         user_chats_id = json.loads(dt["user_chats_id"].replace("\'", "\""))
-        iTemp={'chat_id': chat_id, 'chat_type': 'group'}
+        iTemp = {'chat_id': chat_id, 'chat_type': 'group'}
         user_chats_id.append(iTemp)
         modelInstance.objects.filter(user_id=user["user_id"]).update(user_chats_id=user_chats_id)
 

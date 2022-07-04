@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import usersData,messages,chatBox,imageBox,fileBox
+from .models import usersData, messages, chatBox, imageBox, fileBox
 # Register your models here.
 
 admin.site.register(usersData)

@@ -13,19 +13,19 @@ class usersData(models.Model):
 
 
 class messages(models.Model):
-    chat_id=models.IntegerField()
-    message_id=models.IntegerField()
-    sender_id=models.IntegerField()
-    time_created=models.TextField(default="2022")
-    message=models.TextField(default="Hi There, (RES)")
+    chat_id = models.IntegerField()
+    message_id = models.IntegerField()
+    sender_id = models.IntegerField()
+    time_created = models.TextField(default="2022")
+    message = models.TextField(default="Hi There, (RES)")
 
 
 class chatBox(models.Model):
-    CHAT_TYPE=(
+    CHAT_TYPE = (
         ('group', 'group'),
         ('person', 'person'),
     )
-    chat_id=models.IntegerField(default=-1)
+    chat_id = models.IntegerField(default=-1)
     chat_type = models.TextField(choices=CHAT_TYPE,default='person')
     participants = models.TextField()
     group_name = models.CharField(max_length=30,)
@@ -39,30 +39,20 @@ def user_directory_path(instance, filename):
 
 
 class fileBox(models.Model):
-    upload=models.FileField(upload_to=user_directory_path)
-    content_type=models.TextField(default="")
-    file_id=models.IntegerField(default=-1)
-    sender_id=models.IntegerField(default=-1)
-    name=models.CharField(max_length=150)
+    upload = models.FileField(upload_to=user_directory_path)
+    content_type = models.TextField(default="")
+    file_id = models.IntegerField(default=-1)
+    sender_id = models.IntegerField(default=-1)
+    name = models.CharField(max_length=150)
 
 
 class imageBox(models.Model):
-    IMAGE_USAGE_CHOSEN=(
+    IMAGE_USAGE_CHOSEN = (
         ("post", "post"),
         ("profile", "profile"),
         ("group_image", "group_photo"),
     )
 
-    image_usage=models.TextField(default="post" ,choices=IMAGE_USAGE_CHOSEN)
+    image_usage = models.TextField(default="post", choices=IMAGE_USAGE_CHOSEN)
     upload = models.ImageField(upload_to=user_directory_path)
-    image_id=models.IntegerField(default=-1)
-
-
-
-# {
-# "username":"armin",
-# "phone_number":"09374301779",
-# "user_id":12345,
-# "image_url":"ssssssssssss",
-# "messages":"{}"
-# }
+    image_id = models.IntegerField(default=-1)
