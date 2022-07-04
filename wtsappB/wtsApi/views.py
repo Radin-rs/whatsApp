@@ -20,8 +20,8 @@ import random
 
 
 
-def addChatToUserChatsId(user_id,chat_id,chat_type):
-    user_datas = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data
+def addChatToUserChatsId(user_id,chat_id,chat_type): #this func is for addParticipants
+    user_datas = userDatasSerializers(modelInstance.objects.get(user_id=user_id)).data #list of dicts
 
     current_user_chats_id=json.loads(user_datas["user_chats_id"].replace("\'","\""))
 
@@ -34,7 +34,7 @@ def addChatToUserChatsId(user_id,chat_id,chat_type):
     elif chat_type=="person":
         chat_info["chat_type"] = "person"
 
-    current_user_chats_id.append(chat_info)
+    current_user_chats_id.append(chat_info) # filtered by user Id
 
     modelInstance.objects.filter(user_id=user_id).update(user_chats_id=current_user_chats_id)
     # Type = void
@@ -51,10 +51,10 @@ def checkOwner(user_id,chat_id): #Check that this person is admin or not
 
 def addMessage(chat_id,message,reply_to,user_id,message_type="message",content_type=None,file_id=None,caption=None):
     new_message_id=generate_new_message_id()
-    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data
+    dt = chatBoxSerializers(modelInstance_ch.objects.get(chat_id=chat_id)).data # catching the field in db
     time_now=str(datetime.datetime.now())
-    messages = json.loads(dt["messages"].replace("\'", "\""))
-    if message_type!="file":
+    messages = json.loads(dt["messages"].replace("\'", "\"")) # we need messages field so extracted it
+    if message_type != "file": # MESSAGE TYPES in this program = 'file' & 'message'
         message_template = {
             "sent_message": message,
             "time_created": time_now,
@@ -72,7 +72,7 @@ def addMessage(chat_id,message,reply_to,user_id,message_type="message",content_t
             "message": message
         }
 
-        serializedMessageBox = messageSerializers(data=message_box_template)
+        serializedMessageBox = messageSerializers(data=message_box_template) # Saving the message_box_template
 
         if serializedMessageBox.is_valid():
             serializedMessageBox.save()
@@ -539,22 +539,19 @@ def changeGroupDescription(requests):
     })
 
 
-
 @api_view(["POST"])
 def addParticipants(requests):
-    datas=requests.data.dict()
-    participants_to_add=json.loads(datas["participants"])
-    chat_id=datas["chat_id"]
-    user_id=datas["user_id"]
-
-
+    datas = requests.data.dict()
+    participants_to_add = json.loads(datas["participants"])  # list of dicts
+    chat_id = datas["chat_id"]
+    user_id = datas["user_id"]
 
     if not checkOwner(user_id,chat_id):
-         return Response({"error":"permission not permitted"})
+         return Response({"error" : "permission not permitted"})
 
-    current_participants=getChatParticipants(chat_id)
+    current_participants = getChatParticipants(chat_id)
 
-    updated_participants=current_participants+participants_to_add
+    updated_participants = current_participants+participants_to_add
 
     modelInstance_ch.objects.filter(chat_id=chat_id).update(participants=updated_participants)
     for member in participants_to_add:

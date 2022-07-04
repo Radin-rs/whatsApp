@@ -3,7 +3,6 @@ from django.db import models
 # Create your models here.
 
 
-
 class usersData(models.Model):
     username = models.CharField(max_length=250)
     phone_number = models.CharField(max_length=250)
@@ -13,18 +12,18 @@ class usersData(models.Model):
     user_chats_id = models.TextField()
 
 
-
 class messages(models.Model):
     chat_id=models.IntegerField()
     message_id=models.IntegerField()
     sender_id=models.IntegerField()
-    time_created=models.TextField(default="2020")
-    message=models.TextField()
+    time_created=models.TextField(default="2022")
+    message=models.TextField(default="Hi There, (RES)")
+
 
 class chatBox(models.Model):
     CHAT_TYPE=(
-        ('group','group'),
-        ('person','person')
+        ('group', 'group'),
+        ('person', 'person'),
     )
     chat_id=models.IntegerField(default=-1)
     chat_type = models.TextField(choices=CHAT_TYPE,default='person')
@@ -38,6 +37,7 @@ class chatBox(models.Model):
 def user_directory_path(instance, filename):
     return '{0}'.format(filename)
 
+
 class fileBox(models.Model):
     upload=models.FileField(upload_to=user_directory_path)
     content_type=models.TextField(default="")
@@ -49,10 +49,10 @@ class fileBox(models.Model):
 class imageBox(models.Model):
     IMAGE_USAGE_CHOSEN=(
         ("post", "post"),
-        ("profile","profile"),
-        ("group_image","group_photo"),
-
+        ("profile", "profile"),
+        ("group_image", "group_photo"),
     )
+
     image_usage=models.TextField(default="post" ,choices=IMAGE_USAGE_CHOSEN)
     upload = models.ImageField(upload_to=user_directory_path)
     image_id=models.IntegerField(default=-1)
